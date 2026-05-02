@@ -47,3 +47,22 @@ def brand_safe_check(term: str, key=Depends(verify_api_key)):
     if not data:
         return {"safe": None, "reason": "Term not in database"}
     row = data[0]
+    safe = row["sentiment"] != "negative" and row["status"] == "active"
+    return {
+        "term": term,
+        "brand_safe": safe,
+        "sentiment": row["sentiment"],
+        "still_relevant": row["status"] == "active",
+        "trend_score": row["trend_score"]
+    }
+
+@app.get("/v1/search")
+def search_terms(q: str, key=Depends(verify_api_key)):
+    r = httpx.get(
+        f"{SUPABASE_URL}/rest/v1/terms?or=(term.ilike.*{q}*,definition.ilike.*{q}*,subculture.ilike.*{q}*)&status=eq.active&order=trend_score.desc&select=term,slug,definition,sentiment,trend_score,subculture",
+        headers=HEADERS
+    )
+    data = r.json()
+    if not data:
+        return {"results": [], "count": 0, "query": q}
+    return {"results": data, "count": len(data), "query": q}
