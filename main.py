@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Header, HTTPException, Depends
+﻿from fastapi import FastAPI, Header, HTTPException, Depends
 import httpx
 import hashlib
 import random
@@ -59,10 +59,8 @@ def brand_safe_check(term: str, key=Depends(verify_api_key)):
 
 @app.get("/v1/search")
 def search_terms(q: str, key=Depends(verify_api_key)):
-    r = httpx.get(
-        f"{SUPABASE_URL}/rest/v1/terms?or=(term.ilike.*{q}*,definition.ilike.*{q}*,subculture.ilike.*{q}*)&status=eq.active&order=trend_score.desc&select=term,slug,definition,sentiment,trend_score,subculture",
-        headers=HEADERS
-    )
+    url = f"{SUPABASE_URL}/rest/v1/terms?or=(term.ilike.*{q}*,definition.ilike.*{q}*,subculture.ilike.*{q}*)&status=eq.active&order=trend_score.desc&select=term,slug,definition,sentiment,trend_score,subculture"
+    r = httpx.get(url, headers=HEADERS)
     data = r.json()
     if not data:
         return {"results": [], "count": 0, "query": q}
@@ -70,5 +68,17 @@ def search_terms(q: str, key=Depends(verify_api_key)):
 
 @app.get("/v1/by-subculture/{subculture}")
 def by_subculture(subculture: str, key=Depends(verify_api_key)):
-    r = httpx.get(
-        f"{SUPABASE_URL}/rest/v1/terms?subculture=ilike.*{subculture}*&status=eq.active&order=trend_score.desc&select=term,slug,definition,sentiment,trend_score,subcultu
+    url = f"{SUPABASE_URL}/rest/v1/terms?subculture=ilike.*{subculture}*&status=eq.active&order=trend_score.desc&select=term,slug,definition,sentiment,trend_score,subculture"
+    r = httpx.get(url, headers=HEADERS)
+    data = r.json()
+    if not data:
+        return {"results": [], "count": 0, "subculture": subculture}
+    return {"results": data, "count": len(data), "subculture": subculture}
+
+@app.get("/v1/random")
+def random_term(key=Depends(verify_api_key)):
+    r = httpx.get(f"{SUPABASE_URL}/rest/v1/terms?status=eq.active&select=term,slug,definition,sentiment,trend_score,subculture,origin_platform", headers=HEADERS)
+    data = r.json()
+    if not data:
+        raise HTTPException(status_code=404, detail="No terms found")
+    return random.choice(data)
