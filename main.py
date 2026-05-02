@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Header, HTTPException, Depends
 import httpx
 import hashlib
+import random
 
 SUPABASE_URL = "https://yftgbwljsajlqfvhlctk.supabase.co"
 SUPABASE_KEY = "sb_publishable_nn95C_w8FMXCUqIAM9pmEQ_yDm2bcXb"
@@ -66,3 +67,8 @@ def search_terms(q: str, key=Depends(verify_api_key)):
     if not data:
         return {"results": [], "count": 0, "query": q}
     return {"results": data, "count": len(data), "query": q}
+
+@app.get("/v1/by-subculture/{subculture}")
+def by_subculture(subculture: str, key=Depends(verify_api_key)):
+    r = httpx.get(
+        f"{SUPABASE_URL}/rest/v1/terms?subculture=ilike.*{subculture}*&status=eq.active&order=trend_score.desc&select=term,slug,definition,sentiment,trend_score,subcultu
