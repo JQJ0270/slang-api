@@ -1,11 +1,19 @@
-﻿from fastapi import FastAPI, Header, HTTPException, Depends
+from fastapi import FastAPI, Header, HTTPException, Depends
+from fastapi.responses import RedirectResponse
 import httpx
 import hashlib
 import random
+import os
+import stripe
 
 SUPABASE_URL = "https://yftgbwljsajlqfvhlctk.supabase.co"
 SUPABASE_KEY = "sb_publishable_nn95C_w8FMXCUqIAM9pmEQ_yDm2bcXb"
 HEADERS = {"apikey": SUPABASE_KEY, "Content-Type": "application/json"}
+
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+
+PRO_PRICE_ID = "price_1TTsIkB086HLwwsDD5GH2GCP"
+BUSINESS_PRICE_ID = "price_1TTt5vB086HLwwsDx97LB1Vs"
 
 app = FastAPI(title="SlangIQ API", version="1.0")
 
@@ -82,3 +90,28 @@ def random_term(key=Depends(verify_api_key)):
     if not data:
         raise HTTPException(status_code=404, detail="No terms found")
     return random.choice(data)
+
+@app.get("/subscribe/{plan}")
+def subscribe(plan: str):
+    if plan == "pro":
+        price_id = PRO_PRICE_ID
+    elif plan == "business":
+        price_id = BUSINESS_PRICE_ID
+    else:
+        raise HTTPException(status_code=400, detail="Invalid plan. Choose pro or business.")
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        mode="subscription",
+        line_items=[{"price": price_id, "quantity": 1}],
+        success_url="https://slang-api-production.up.railway.app/success",
+        cancel_url="https://slang-api-production.up.railway.app/cancel",
+    )
+    return RedirectResponse(session.url)
+
+@app.get("/success")
+def success():
+    return {"message": "Payment successful! Your API key will be emailed to you shortly."}
+
+@app.get("/cancel")
+def cancel():
+    return {"message": "Payment cancelled. Come back when you are ready."}
