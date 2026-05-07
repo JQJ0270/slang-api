@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SlangIQ — Slang & Culture Intelligence API</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #fff; }
+    nav { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
+    nav h1 { font-size: 22px; font-weight: 700; color: #fff; }
+    nav a { color: #888; text-decoration: none; font-size: 14px; }
+    .hero { text-align: center; padding: 100px 20px 60px; }
+    .badge { display: inline-block; background: #1a1a1a; border: 1px solid #333; color: #888; padding: 6px 14px; border-radius: 20px; font-size: 13px; margin-bottom: 24px; }
+    .hero h2 { font-size: 52px; font-weight: 800; line-height: 1.1; max-width: 700px; margin: 0 auto 20px; }
+    .hero h2 span { color: #7c3aed; }
+    .hero p { color: #888; font-size: 18px; max-width: 500px; margin: 0 auto 40px; line-height: 1.6; }
+    .buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { background: #7c3aed; color: #fff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; }
+    .btn-secondary { background: #1a1a1a; color: #fff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; border: 1px solid #333; }
+    .stats { display: flex; justify-content: center; gap: 60px; padding: 60px 20px; border-top: 1px solid #111; border-bottom: 1px solid #111; }
+    .stat h3 { font-size: 36px; font-weight: 800; color: #7c3aed; }
+    .stat p { color: #888; font-size: 14px; margin-top: 4px; }
+    .endpoints { padding: 80px 20px; max-width: 900px; margin: 0 auto; }
+    .endpoints h2 { font-size: 36px; font-weight: 700; text-align: center; margin-bottom: 12px; }
+    .endpoints p { color: #888; text-align: center; margin-bottom: 48px; }
+    .endpoint-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .endpoint-card { background: #111; border: 1px solid #222; border-radius: 12px; padding: 24px; }
+    .endpoint-card .method { color: #7c3aed; font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+    .endpoint-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .endpoint-card p { color: #888; font-size: 14px; line-height: 1.5; }
+    .code-section { background: #111; border-top: 1px solid #222; border-bottom: 1px solid #222; padding: 80px 20px; }
+    .code-section h2 { font-size: 36px; font-weight: 700; text-align: center; margin-bottom: 12px; }
+    .code-section p { color: #888; text-align: center; margin-bottom: 48px; }
+    pre { background: #0d0d0d; border: 1px solid #222; border-radius: 12px; padding: 28px; max-width: 700px; margin: 0 auto; overflow-x: auto; font-size: 14px; line-height: 1.7; color: #e2e8f0; }
+    .pricing { padding: 80px 20px; max-width: 900px; margin: 0 auto; }
+    .pricing h2 { font-size: 36px; font-weight: 700; text-align: center; margin-bottom: 12px; }
+    .pricing p { color: #888; text-align: center; margin-bottom: 48px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+    .pricing-card { background: #111; border: 1px solid #222; border-radius: 16px; padding: 32px; }
+    .pricing-card.featured { border-color: #7c3aed; }
+    .pricing-card .plan { font-size: 14px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .pricing-card .price { font-size: 42px; font-weight: 800; margin-bottom: 4px; }
+    .pricing-card .price span { font-size: 16px; color: #888; font-weight: 400; }
+    .pricing-card ul { list-style: none; margin: 24px 0; }
+    .pricing-card ul li { color: #888; font-size: 14px; padding: 6px 0; border-bottom: 1px solid #1a1a1a; }
+    .pricing-card ul li:before { content: "✓ "; color: #7c3aed; }
+    .pricing-card a { display: block; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px; margin-top: 8px; }
+    .pricing-card.featured a { background: #7c3aed; color: #fff; }
+    .pricing-card:not(.featured) a { background: #1a1a1a; color: #fff; border: 1px solid #333; }
+    footer { text-align: center; padding: 40px; color: #555; font-size: 14px; border-top: 1px solid #111; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <h1>SlangIQ</h1>
+  <a href="https://slang-api-production.up.railway.app/docs">API Docs</a>
+</nav>
+
+<section class="hero">
+  <div class="badge">500+ Terms & Growing</div>
+  <h2>The <span>Slang & Culture</span> Intelligence API</h2>
+  <p>Real-time slang definitions, trend scores, sentiment analysis and brand safety checks. Built for developers and marketing teams.</p>
+  <div class="buttons">
+    <a href="#pricing" class="btn-primary">Get Started</a>
+    <a href="https://slang-api-production.up.railway.app/docs" class="btn-secondary">View Docs</a>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat"><h3>500+</h3><p>Slang Terms</p></div>
+  <div class="stat"><h3>14</h3><p>Subcategories</p></div>
+  <div class="stat"><h3>6</h3><p>API Endpoints</p></div>
+  <div class="stat"><h3>99%</h3><p>Uptime</p></div>
+</section>
+
+<section class="endpoints">
+  <h2>Everything you need</h2>
+  <p>Six powerful endpoints to understand culture in real time</p>
+  <div class="endpoint-grid">
+    <div class="endpoint-card">
+      <div class="method">GET</div>
+      <h4>/v1/lookup/{term}</h4>
+      <p>Get full definition, sentiment, trend score and origin for any slang term.</p>
+    </div>
+    <div class="endpoint-card">
+      <div class="method">GET</div>
+      <h4>/v1/trending</h4>
+      <p>Returns the top trending slang terms ranked by real-time trend score.</p>
+    </div>
+    <div class="endpoint-card">
+      <div class="method">GET</div>
+      <h4>/v1/brand-safe/{term}</h4>
+      <p>Check if a slang term is safe for your brand to use in campaigns.</p>
+    </div>
+    <div class="endpoint-card">
+      <div class="method">GET</div>
+      <h4>/v1/search</h4>
+      <p>Search across all terms, definitions and subcategories instantly.</p>
+    </div>
+    <div class="endpoint-card">
+      <div class="method">GET</div>
+      <h4>/v1/by-subculture/{name}</h4>
+      <p>Filter terms by subculture — Gen Z, Gaming, Hip Hop, Crypto and more.</p>
+    </div>
+    <div class="endpoint-card">
+      <div class="method">GET</div>
+      <h4>/v1/random</h4>
+      <p>Get a random slang term — perfect for word of the day features.</p>
+    </div>
+  </div>
+</section>
+
+<section class="code-section">
+  <h2>Simple to integrate</h2>
+  <p>One API key, one request, instant cultural intelligence</p>
+  <pre>curl -X GET \
+  'https://slang-api-production.up.railway.app/v1/lookup/rizz' \
+  -H 'x-api-key: YOUR_API_KEY'
+
+# Response
+{
+  "term": "rizz",
+  "definition": "Natural charm or ability to attract others.",
+  "sentiment": "positive",
+  "trend_score": 95,
+  "origin_platform": "TikTok",
+  "subculture": "Gen Z",
+  "status": "active"
+}</pre>
+</section>
+
+<section class="pricing" id="pricing">
+  <h2>Simple pricing</h2>
+  <p>Start free, scale when you need to</p>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="plan">Free</div>
+      <div class="price">$0<span>/month</span></div>
+      <ul>
+        <li>100 API calls/month</li>
+        <li>All 6 endpoints</li>
+        <li>500+ slang terms</li>
+        <li>Community support</li>
+      </ul>
+      <a href="mailto:slangiq@gmail.com">Get Free Key</a>
+    </div>
+    <div class="pricing-card featured">
+      <div class="plan">Pro</div>
+      <div class="price">$29<span>/month</span></div>
+      <ul>
+        <li>10,000 API calls/month</li>
+        <li>All 6 endpoints</li>
+        <li>Trend score access</li>
+        <li>Email support</li>
+      </ul>
+      <a href="https://slang-api-production.up.railway.app/subscribe/pro">Get Started</a>
+    </div>
+    <div class="pricing-card">
+      <div class="plan">Business</div>
+      <div class="price">$99<span>/month</span></div>
+      <ul>
+        <li>100,000 API calls/month</li>
+        <li>All 6 endpoints</li>
+        <li>Brand safety scoring</li>
+        <li>Priority support</li>
+      </ul>
+      <a href="https://slang-api-production.up.railway.app/subscribe/business">Get Started</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>SlangIQ © 2026 — Slang & Culture Intelligence API</p>
+</footer>
+
+</body>
+</html>
