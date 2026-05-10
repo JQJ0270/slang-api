@@ -16,6 +16,8 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 PRO_PRICE_ID = "price_1TTsIkB086HLwwsDD5GH2GCP"
 BUSINESS_PRICE_ID = "price_1TTt5vB086HLwwsDx97LB1Vs"
 
+app = FastAPI(title="SlangIQ API", version="1.0")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
