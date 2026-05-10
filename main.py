@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Header, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 import httpx
 import hashlib
@@ -15,7 +16,12 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 PRO_PRICE_ID = "price_1TTsIkB086HLwwsDD5GH2GCP"
 BUSINESS_PRICE_ID = "price_1TTt5vB086HLwwsDx97LB1Vs"
 
-app = FastAPI(title="SlangIQ API", version="1.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 
 def verify_api_key(x_api_key: str = Header(...)):
     key_hash = hashlib.sha256(x_api_key.encode()).hexdigest()
