@@ -1,4 +1,3 @@
-Set-Content -Path main.py -Encoding UTF8 -Value @'
 from fastapi import FastAPI, Header, HTTPException, Depends
 from fastapi.responses import RedirectResponse
 import httpx
@@ -116,4 +115,3 @@ def success():
 @app.get("/cancel")
 def cancel():
     return {"message": "Payment cancelled. Come back when you are ready."}
-'@
