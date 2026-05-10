@@ -209,9 +209,7 @@ async function loadWordOfTheDay() {
       return;
     }
 
-    const res = await fetch(`${API_URL}/v1/random`, {
-      headers: { "x-api-key": API_KEY }
-    });
+    const res = await fetch(`${API_URL}/v1/random`);
     const data = await res.json();
     localStorage.setItem("wotd_date", today);
     localStorage.setItem("wotd_data", JSON.stringify(data));
