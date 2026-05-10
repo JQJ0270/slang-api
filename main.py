@@ -1,3 +1,4 @@
+Set-Content -Path main.py -Encoding UTF8 -Value @'
 from fastapi import FastAPI, Header, HTTPException, Depends
 from fastapi.responses import RedirectResponse
 import httpx
@@ -25,8 +26,9 @@ def verify_api_key(x_api_key: str = Header(...)):
         raise HTTPException(status_code=401, detail="Invalid or rate-limited API key")
     return data[0]
 
-@app.get("/v1/random")
-def random_term():    slug = term.lower().replace(" ", "-")
+@app.get("/v1/lookup/{term}")
+def lookup_term(term: str, key=Depends(verify_api_key)):
+    slug = term.lower().replace(" ", "-")
     r = httpx.get(f"{SUPABASE_URL}/rest/v1/terms?slug=eq.{slug}&status=eq.active&select=*", headers=HEADERS)
     data = r.json()
     if not data:
@@ -83,7 +85,7 @@ def by_subculture(subculture: str, key=Depends(verify_api_key)):
     return {"results": data, "count": len(data), "subculture": subculture}
 
 @app.get("/v1/random")
-def random_term(key=Depends(verify_api_key)):
+def random_term():
     r = httpx.get(f"{SUPABASE_URL}/rest/v1/terms?status=eq.active&select=term,slug,definition,sentiment,trend_score,subculture,origin_platform", headers=HEADERS)
     data = r.json()
     if not data:
@@ -114,3 +116,4 @@ def success():
 @app.get("/cancel")
 def cancel():
     return {"message": "Payment cancelled. Come back when you are ready."}
+'@
