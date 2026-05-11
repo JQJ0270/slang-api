@@ -1,6 +1,7 @@
-from fastapi import FastAPI, Header, HTTPException, Depends
+from fastapi import FastAPI, Header, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.openapi.docs import get_swagger_ui_html
 import httpx
 import hashlib
 import random
@@ -16,7 +17,12 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 PRO_PRICE_ID = "price_1TTsIkB086HLwwsDD5GH2GCP"
 BUSINESS_PRICE_ID = "price_1TTt5vB086HLwwsDx97LB1Vs"
 
-app = FastAPI(title="SlangIQ API", version="1.0")
+app = FastAPI(
+    title="SlangIQ API",
+    version="1.0",
+    description="The Slang & Culture Intelligence API. Real-time slang definitions, trend scores, sentiment analysis and brand safety checks.",
+    docs_url=None,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,6 +30,20 @@ app.add_middleware(
     allow_methods=["GET"],
     allow_headers=["*"],
 )
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui():
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="SlangIQ API",
+        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui.css",
+        swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui-bundle.js",
+        swagger_favicon_url="https://em-content.zobj.net/source/twitter/376/fire_1f525.png",
+        swagger_ui_parameters={
+            "defaultModelsExpandDepth": -1,
+            "syntaxHighlight.theme": "monokai",
+        }
+    )
 
 def verify_api_key(x_api_key: str = Header(...)):
     key_hash = hashlib.sha256(x_api_key.encode()).hexdigest()
