@@ -203,3 +203,22 @@ def success():
 @app.get("/cancel")
 def cancel():
     return {"message": "Payment cancelled. Come back when you are ready."}
+import secrets
+
+@app.post("/signup")
+def signup(email: str):
+    check = httpx.get(f"{SUPABASE_URL}/rest/v1/users?email=eq.{email}&select=*", headers=HEADERS)
+    if check.json():
+        raise HTTPException(status_code=400, detail="Email already registered.")
+    api_key = secrets.token_hex(32)
+    key_hash = hashlib.sha256(api_key.encode()).hexdigest()
+    user_res = httpx.post(f"{SUPABASE_URL}/rest/v1/users", headers={**HEADERS, "Prefer": "return=representation"}, json={"email": email, "plan": "free"})
+    user = user_res.json()[0]
+    httpx.post(f"{SUPABASE_URL}/rest/v1/api_keys", headers=HEADERS, json={
+        "user_id": user["id"],
+        "key_hash": key_hash,
+        "tier": "free",
+        "monthly_limit": 100,
+        "calls_this_month": 0
+    })
+    return {"api_key": api_key, "email": email, "plan": "free", "monthly_limit": 100}
