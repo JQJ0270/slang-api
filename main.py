@@ -123,6 +123,20 @@ def browse_terms():
     )
     return r.json()
 
+@app.get("/v1/wotd")
+def word_of_the_day():
+    from datetime import date
+    r = httpx.get(
+        f"{SUPABASE_URL}/rest/v1/terms?status=eq.active&select=term,slug,definition,sentiment,trend_score,subculture,origin_platform",
+        headers=HEADERS
+    )
+    data = r.json()
+    if not data:
+        raise HTTPException(status_code=404, detail="No terms found")
+    today = date.today().toordinal()
+    index = today % len(data)
+    return data[index]
+
 def verify_api_key(x_api_key: str = Header(...)):
     key_hash = hashlib.sha256(x_api_key.encode()).hexdigest()
     r = httpx.get(f"{SUPABASE_URL}/rest/v1/api_keys?key_hash=eq.{key_hash}&select=*", headers=HEADERS)

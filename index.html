@@ -75,6 +75,7 @@
     <a href="signup.html">Get API Key</a>
   </div>
 </nav>
+
 <section class="hero">
   <div class="badge">500+ Terms & Growing</div>
   <h2>The <span>Slang & Culture</span> Intelligence API</h2>
@@ -203,25 +204,13 @@ const API_URL = "https://slang-api-production.up.railway.app";
 
 async function loadWordOfTheDay() {
   try {
-    const today = new Date().toDateString();
-    const cached = localStorage.getItem("wotd_date");
-    const cachedWord = localStorage.getItem("wotd_data");
-
-    if (cached === today && cachedWord) {
-      renderWord(JSON.parse(cachedWord));
-      return;
-    }
-
-    const res = await fetch(`${API_URL}/v1/random`);
+    const res = await fetch(`${API_URL}/v1/wotd`);
     const data = await res.json();
-    localStorage.setItem("wotd_date", today);
-    localStorage.setItem("wotd_data", JSON.stringify(data));
     renderWord(data);
   } catch (e) {
     document.getElementById("wotd-content").innerHTML = "<p class='wotd-loading'>Could not load word of the day.</p>";
   }
 }
-
 function renderWord(data) {
   document.getElementById("wotd-content").innerHTML = `
     <div class="word">${data.term}</div>
