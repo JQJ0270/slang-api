@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 import httpx
 import hashlib
 import random
+import secrets
 import os
 import stripe
 
@@ -44,13 +45,7 @@ async def custom_swagger_ui():
     * { box-sizing: border-box; }
     body { margin: 0; background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
     .swagger-ui { background: #0a0a0a; }
-    .swagger-ui .topbar { background: #0a0a0a; border-bottom: 1px solid #222; padding: 12px 0; }
-    .swagger-ui .topbar-wrapper { justify-content: flex-start; padding: 0 40px; }
-    .swagger-ui .topbar-wrapper .link { display: flex; align-items: center; gap: 10px; }
-    .swagger-ui .topbar-wrapper .link:before { content: "SlangIQ"; font-size: 20px; font-weight: 800; color: #fff; }
-    .swagger-ui .topbar-wrapper img { display: none; }
-    .swagger-ui .topbar-wrapper input { display: none; }
-    .swagger-ui .topbar-wrapper button { display: none; }
+    .swagger-ui .topbar { display: none; }
     .swagger-ui .info { margin: 40px; }
     .swagger-ui .info .title { color: #fff; font-size: 32px; font-weight: 800; }
     .swagger-ui .info .description p { color: #888; font-size: 16px; }
@@ -60,7 +55,9 @@ async def custom_swagger_ui():
     .swagger-ui .opblock-tag:hover { background: #111; }
     .swagger-ui .opblock { border-radius: 8px; border: 1px solid #222; margin: 8px 0; box-shadow: none; }
     .swagger-ui .opblock.opblock-get { background: #0d1117; border-color: #7c3aed; }
+    .swagger-ui .opblock.opblock-post { background: #0d1117; border-color: #059669; }
     .swagger-ui .opblock.opblock-get .opblock-summary-method { background: #7c3aed; border-radius: 4px; }
+    .swagger-ui .opblock.opblock-post .opblock-summary-method { background: #059669; border-radius: 4px; }
     .swagger-ui .opblock.opblock-get .opblock-summary { border-color: #7c3aed; }
     .swagger-ui .opblock-summary-path { color: #e2e8f0; }
     .swagger-ui .opblock-summary-description { color: #888; }
@@ -86,9 +83,22 @@ async def custom_swagger_ui():
     .swagger-ui .wrapper { background: #0a0a0a; }
     .swagger-ui .no-margin { background: #0a0a0a; }
     body .swagger-ui .wrapper { padding: 0 20px; }
+    .custom-nav { padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; background: #0a0a0a; }
+    .custom-nav h1 { font-size: 20px; font-weight: 800; color: #fff; }
+    .custom-nav a { color: #888; text-decoration: none; font-size: 14px; }
+    .custom-nav a:hover { color: #fff; }
+    .custom-nav div { display: flex; gap: 24px; }
   </style>
 </head>
 <body>
+  <nav class="custom-nav">
+    <h1>SlangIQ</h1>
+    <div>
+      <a href="https://jqj0270.github.io/slang-api">Home</a>
+      <a href="https://jqj0270.github.io/slang-api/browse.html">Browse Terms</a>
+      <a href="https://jqj0270.github.io/slang-api/signup.html">Get API Key</a>
+    </div>
+  </nav>
   <div id="swagger-ui"></div>
   <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist/swagger-ui-bundle.js"></script>
   <script>
@@ -104,6 +114,14 @@ async def custom_swagger_ui():
 </body>
 </html>
 """)
+
+@app.get("/v1/browse")
+def browse_terms():
+    r = httpx.get(
+        f"{SUPABASE_URL}/rest/v1/terms?status=eq.active&order=trend_score.desc&select=term,slug,definition,sentiment,trend_score,subculture,origin_platform",
+        headers=HEADERS
+    )
+    return r.json()
 
 def verify_api_key(x_api_key: str = Header(...)):
     key_hash = hashlib.sha256(x_api_key.encode()).hexdigest()
@@ -203,7 +221,6 @@ def success():
 @app.get("/cancel")
 def cancel():
     return {"message": "Payment cancelled. Come back when you are ready."}
-import secrets
 
 @app.post("/signup")
 def signup(email: str):
