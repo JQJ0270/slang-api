@@ -8,14 +8,14 @@ import secrets
 import os
 import stripe
 
-SUPABASE_URL = "https://yftgbwljsajlqfvhlctk.supabase.co"
-SUPABASE_KEY = "sb_publishable_nn95C_w8FMXCUqIAM9pmEQ_yDm2bcXb"
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 HEADERS = {"apikey": SUPABASE_KEY, "Content-Type": "application/json"}
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
-PRO_PRICE_ID = "price_1TTsIkB086HLwwsDD5GH2GCP"
-BUSINESS_PRICE_ID = "price_1TTt5vB086HLwwsDx97LB1Vs"
+PRO_PRICE_ID = os.getenv("PRO_PRICE_ID")
+BUSINESS_PRICE_ID = os.getenv("BUSINESS_PRICE_ID")
 
 app = FastAPI(
     title="SlangIQ API",
